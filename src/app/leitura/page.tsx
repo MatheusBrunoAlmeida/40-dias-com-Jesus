@@ -19,6 +19,7 @@ import { getCookie } from "cookies-next"
 import { motion, AnimatePresence } from "framer-motion"
 import ReactConfetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
+import { getUserReadDays } from '@/app/actions/userActions'
 
 export default function LeituraPage() {
     const [checkedDays, setCheckedDays] = useState<{ [key: number]: boolean }>({})
@@ -32,10 +33,14 @@ export default function LeituraPage() {
         const fetchReadDays = async () => {
             const userId = getCookie('user_id')
             try {
-                const response = await fetch(`/api/readdays/${userId}`)
-                const data = await response.json()
+                // const response = await fetch(`/api/readdays/${userId}`)
+                // const data = await response.json()
 
-                const readDaysMap = data.reduce((acc: { [key: number]: boolean }, reading: any) => {
+                // @ts-ignore
+                const response = await getUserReadDays(userId);
+
+
+                const readDaysMap = response?.data?.reduce((acc: { [key: number]: boolean }, reading: any) => {
                     const dayIndex = days.findIndex(d => d.day === reading.day)
                     if (dayIndex !== -1) {
                         acc[dayIndex] = true
@@ -43,6 +48,7 @@ export default function LeituraPage() {
                     return acc
                 }, {})
 
+                // @ts-ignore
                 setCheckedDays(readDaysMap)
             } catch (error) {
                 console.error("Erro ao buscar dias lidos:", error)

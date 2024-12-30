@@ -38,7 +38,8 @@ export async function POST(request: Request) {
       data: {
         name: nome,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        localidade: ''
       }
     })
 
