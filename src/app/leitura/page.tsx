@@ -112,6 +112,7 @@ export default function LeituraPage() {
         <div className="p-8">
             <div className="flex flex-col gap-4 items-center">
                 <img src="/logo.png" alt="Logo" />
+                <img src="/logodkm.png" className="w-20" alt="" />
                 <div className="flex flex-col gap-0 mt-10 items-center">
                     <span className="font-outfit">Bem vindo(a) {username}</span>
                     <span className="font-outfit font-semibold">Marque o dia que você leu</span>
@@ -122,24 +123,33 @@ export default function LeituraPage() {
                 {days.map((item, index) => (
                     <label
                         key={index}
-                        className={`flex flex-wrap items-center gap-2 cursor-pointer
-                            ${checkedDays[index] ? 'line-through bg-yellow-100 rounded' : ''}
+                        className={`flex flex-wrap shadow p-4 rounded-md items-center gap-2 cursor-pointer
+                            ${checkedDays[index] ? ' bg-gray-100 rounded' : ''}
                             `}
                     >
                         <Checkbox
                             checked={checkedDays[index] || false}
                             onCheckedChange={() => handleCheckDay(index)}
+                            className="data-[state=checked]:bg-[#5472b7] data-[state=checked]:border-[#5472b7]"
+                            icon={'🔥'}
                         />
                         <span className={`font-outfit lg:text-2xl font-bold text-[#5472b7]
-                            ${checkedDays[index] ? 'line-through bg-yellow-100 px-2 rounded' : ''}
+                            ${checkedDays[index] ? 'line-through text-gray-400  px-2 rounded' : ''}
                         `}>
                             Dia -
                             {` ${item.day}`}:
                         </span>
                         <span className={`font-outfit lg:text-2xl
-                            ${checkedDays[index] ? 'line-through bg-yellow-100 px-2 rounded' : ''}
+                            ${checkedDays[index] ? 'line-through text-gray-400 px-2 rounded' : ''}
                         `}>
                             {item.read}
+                        </span>
+                        <span className={`font-outfit lg:text-2xl`}>
+                            {checkedDays[index] ? (
+                                <>
+                                    <img className="w-5 h-5" src="/fire3.gif"/>
+                                </>
+                            ) : ''}
                         </span>
                     </label>
                 ))}
