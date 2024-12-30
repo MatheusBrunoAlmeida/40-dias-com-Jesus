@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
     darkMode: ["class"],
     content: ["./src/**/*.{html,js,tsx}"],
@@ -50,7 +52,10 @@ module.exports = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+		fontFamily: {
+			outfit: ['"Outfit"', ...defaultTheme.fontFamily.sans]
+		}
   	}
   },
   plugins: [require("tailwindcss-animate")],

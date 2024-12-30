@@ -3,15 +3,19 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function CreateAccount() {
   const [isOpen, setIsOpen] = useState(false)
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
-    senha: ''
+    senha: '',
+    localidade: ''
   });
+  const router = useRouter()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,11 +39,35 @@ export default function CreateAccount() {
     console.log('Dados do formulário:', formData);
   };
 
+  const handleCreateAccount = async () => {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      toast('Conta criada com sucesso!')
+      router.push('/')
+    } catch (error) {
+      // Tratar erro
+      console.error('Erro ao criar conta:', error);
+      toast.error('Problemas ao criar conta, se já tiver conta, tente logar')
+    }
+  }
+
   return (
     <div className="w-screen h-screen flex justify-center items-center p-4 mt-10">
-      <Card className='bg-gray-50 w-full'>
+      <Card className='bg-gray-50 w-full lg:w-1/3'>
         <CardHeader>
-          <h1 className="text-2xl font-bold text-center mb-8">Criar Conta</h1>
+          <h1 className="text-2xl font-outfit font-bold text-center mb-8">Criar Conta</h1>
         </CardHeader>
 
         <CardContent>
@@ -82,6 +110,23 @@ export default function CreateAccount() {
 
             <div className="space-y-2">
               <label
+                htmlFor="localidade"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Localidade
+              </label>
+              <Input
+                id="localidade"
+                name="localidade"
+                placeholder='Digite sua localidade'
+                value={formData.localidade}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
                 htmlFor="senha"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -104,6 +149,7 @@ export default function CreateAccount() {
             >
               Cadastrar
             </Button>
+            <Button className='text-[#5472b7]' variant="link" onClick={()=> router.push('/')}>Voltar</Button>
           </form>
         </CardContent>
       </Card>
@@ -113,13 +159,13 @@ export default function CreateAccount() {
           <AlertDialogHeader>
             <AlertDialogTitle>Digitou seu nome e sobre nome?</AlertDialogTitle>
             <AlertDialogDescription>
-              Por favor, tenha certeza de ter digitado seu nome e sobre nome para que 
+              Por favor, tenha certeza de ter digitado seu nome e sobre nome para que
               possamos identificar quem é você
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Editar</AlertDialogCancel>
-            <AlertDialogAction className='bg-[#5472b7]'>Continuar</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setIsOpen(false)}>Editar</AlertDialogCancel>
+            <AlertDialogAction className='bg-[#5472b7]' onClick={() => handleCreateAccount()}>Continuar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
