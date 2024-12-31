@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import ReactConfetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
 import { getUserReadDays } from '@/app/actions/userActions'
+import Head from "next/head"
 
 export default function LeituraPage() {
     const [checkedDays, setCheckedDays] = useState<{ [key: number]: boolean }>({})
@@ -109,95 +110,97 @@ export default function LeituraPage() {
     }
 
     return (
-        <div className="p-8">
-            <div className="flex flex-col gap-4 items-center">
-                <img src="/logo.png" alt="Logo" />
-                <img src="/logodkm.png" className="w-20" alt="" />
-                <div className="flex flex-col gap-0 mt-10 items-center">
-                    <span className="font-outfit">Bem vindo(a) {username}</span>
-                    <span className="font-outfit font-semibold">Marque o dia que você leu</span>
+        <>
+            <div className="p-8">
+                <div className="flex flex-col gap-4 items-center">
+                    <img src="/logo.png" alt="Logo" />
+                    <img src="/logodkm.png" className="w-20" alt="" />
+                    <div className="flex flex-col gap-0 mt-10 items-center">
+                        <span className="font-outfit">Bem vindo(a) {username}</span>
+                        <span className="font-outfit font-semibold">Marque o dia que você leu</span>
+                    </div>
                 </div>
-            </div>
 
-            <div className="mt-8 flex flex-col gap-3 lg:items-center">
-                {days.map((item, index) => (
-                    <label
-                        key={index}
-                        className={`flex flex-wrap shadow p-4 rounded-md items-center gap-2 cursor-pointer
+                <div className="mt-8 flex flex-col gap-3 lg:items-center">
+                    {days.map((item, index) => (
+                        <label
+                            key={index}
+                            className={`flex flex-wrap shadow p-4 rounded-md items-center gap-2 cursor-pointer
                             ${checkedDays[index] ? ' bg-gray-100 rounded' : ''}
                             `}
-                    >
-                        <Checkbox
-                            checked={checkedDays[index] || false}
-                            onCheckedChange={() => handleCheckDay(index)}
-                            className="data-[state=checked]:bg-[#5472b7] data-[state=checked]:border-[#5472b7]"
-                            icon={'🔥'}
-                        />
-                        <span className={`font-outfit lg:text-2xl font-bold text-[#5472b7]
+                        >
+                            <Checkbox
+                                checked={checkedDays[index] || false}
+                                onCheckedChange={() => handleCheckDay(index)}
+                                className="data-[state=checked]:bg-[#5472b7] data-[state=checked]:border-[#5472b7]"
+                                icon={'🔥'}
+                            />
+                            <span className={`font-outfit lg:text-2xl font-bold text-[#5472b7]
                             ${checkedDays[index] ? 'line-through text-gray-400  px-2 rounded' : ''}
                         `}>
-                            Dia -
-                            {` ${item.day}`}:
-                        </span>
-                        <span className={`font-outfit lg:text-2xl
+                                Dia -
+                                {` ${item.day}`}:
+                            </span>
+                            <span className={`font-outfit lg:text-2xl
                             ${checkedDays[index] ? 'line-through text-gray-400 px-2 rounded' : ''}
                         `}>
-                            {item.read}
-                        </span>
-                        <span className={`font-outfit lg:text-2xl`}>
-                            {checkedDays[index] ? (
-                                <>
-                                    <img className="w-5 h-5" src="/fire3.gif"/>
-                                </>
-                            ) : ''}
-                        </span>
-                    </label>
-                ))}
+                                {item.read}
+                            </span>
+                            <span className={`font-outfit lg:text-2xl`}>
+                                {checkedDays[index] ? (
+                                    <>
+                                        <img className="w-5 h-5" src="/fire3.gif" />
+                                    </>
+                                ) : ''}
+                            </span>
+                        </label>
+                    ))}
+                </div>
+
+                <AlertDialog open={showSuccess} onOpenChange={setDialogOpen}>
+                    <AlertDialogContent>
+                        {showSuccess && (
+                            <ReactConfetti
+                                width={width}
+                                height={height}
+                                recycle={false}
+                                numberOfPieces={200}
+                                gravity={0.3}
+                            />
+                        )}
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Parabens! 🎉</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Você completou mais um dia! Continue nessa constância!
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogAction onClick={() => setShowSuccess(false)}>
+                                Fechar
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
+                <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar Leitura</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Você realmente leu o dia {selectedDay !== null ? days[selectedDay].day : ''}?
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel onClick={() => setDialogOpen(false)}>
+                                Cancelar
+                            </AlertDialogCancel>
+                            <AlertDialogAction onClick={handleConfirmReading}>
+                                Confirmar Leitura
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
-
-            <AlertDialog open={showSuccess} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
-                    {showSuccess && (
-                        <ReactConfetti
-                            width={width}
-                            height={height}
-                            recycle={false}
-                            numberOfPieces={200}
-                            gravity={0.3}
-                        />
-                    )}
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Parabens! 🎉</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Você completou mais um dia! Continue nessa constância!
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogAction onClick={()=> setShowSuccess(false)}>
-                            Fechar
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
-            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmar Leitura</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Você realmente leu o dia {selectedDay !== null ? days[selectedDay].day : ''}?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setDialogOpen(false)}>
-                            Cancelar
-                        </AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmReading}>
-                            Confirmar Leitura
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
+        </>
     )
 }
