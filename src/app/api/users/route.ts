@@ -4,7 +4,7 @@ import { hash } from 'bcrypt'
 
 export async function POST(request: Request) {
   try {
-    const { nome, email, senha } = await request.json()
+    const { nome, email, senha, localidade } = await request.json()
 
     console.log(nome, email, senha)
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
         name: nome,
         email,
         password: hashedPassword,
-        localidade: ''
+        localidade
       }
     })
 
