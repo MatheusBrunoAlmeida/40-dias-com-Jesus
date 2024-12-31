@@ -121,7 +121,7 @@ export default function LeituraPage() {
                     </div>
                 </div>
 
-                <div className="mt-8 flex flex-col gap-3 lg:items-center">
+                <div className="mt-8 flex flex-col gap-3 lg:px-56">
                     {days.map((item, index) => (
                         <label
                             key={index}
