@@ -66,7 +66,11 @@ export default function CreateAccount() {
   return (
     <div className="w-screen h-screen flex justify-center items-center p-4 mt-10">
       <Card className='bg-gray-50 w-full lg:w-1/3'>
-        <CardHeader>
+        <CardHeader className='flex flex-col items-center'>
+          <div className='mb-10 flex flex-col items-center'>
+            <img src="/logo.png" alt="Logo" className='' />
+            <img src="/logodkm.png" className="w-20 mt-5" />
+          </div>
           <h1 className="text-2xl font-outfit font-bold text-center mb-8">Criar Conta</h1>
         </CardHeader>
 
@@ -149,7 +153,7 @@ export default function CreateAccount() {
             >
               Cadastrar
             </Button>
-            <Button className='text-[#5472b7]' variant="link" onClick={()=> router.push('/')}>Voltar</Button>
+            <Button className='text-[#5472b7]' variant="link" onClick={() => router.push('/')}>Voltar</Button>
           </form>
         </CardContent>
       </Card>

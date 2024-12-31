@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 
 export default function Home() {
   const router = useRouter()
@@ -14,6 +14,21 @@ export default function Home() {
     senha: ''
   });
   const [error, setError] = useState('');
+
+  useEffect(()=> {
+    handleVerifyIfHaveUser()
+  },[])
+
+  const handleVerifyIfHaveUser = async () => {
+    const username = await getCookie("user_name")
+    const userId = await getCookie('user_id')
+
+    if(username && userId){
+      console.log(username, userId)
+
+      router.push('/leitura')
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -55,8 +70,9 @@ export default function Home() {
   return (
     <div className="w-screen p-4 flex justify-center items-center h-screen">
       <Card className="bg-gray-50 lg:w-1/3">
-        <CardHeader>
+        <CardHeader className="flex flex-col items-center gap-2">
           <img src="/logo.png" alt="Logo" />
+          <img src="/logodkm.png" className="w-20"/>
         </CardHeader>
 
         <CardContent>
