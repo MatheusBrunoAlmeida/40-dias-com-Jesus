@@ -15,42 +15,44 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { getCookie } from "cookies-next"
+import { getCookie, deleteCookie } from "cookies-next"
 import { motion, AnimatePresence } from "framer-motion"
 import ReactConfetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
 import { getUserReadDays } from '@/app/actions/userActions'
 import Head from "next/head"
+import { useRouter } from "next/navigation"
 
 export default function LeituraPage() {
     const [checkedDays, setCheckedDays] = useState<{ [key: number]: boolean }>({})
     const [dialogOpen, setDialogOpen] = useState(false)
     const [selectedDay, setSelectedDay] = useState<number | null>(null)
-    const username = getCookie('user_name')
     const [showSuccess, setShowSuccess] = useState(false)
+    const [userId, setUserId] = useState<any>()
+    const username = getCookie('user_name')
     const { width, height } = useWindowSize()
+    const router = useRouter()
 
     useEffect(() => {
         const fetchReadDays = async () => {
-            const userId = getCookie('user_id')
+            const userId = await getCookie('user_id')
+            // setUserId(userId)
             try {
-                // const response = await fetch(`/api/readdays/${userId}`)
-                // const data = await response.json()
-
                 // @ts-ignore
                 const response = await getUserReadDays(userId);
 
-
                 const readDaysMap = response?.data?.reduce((acc: { [key: number]: boolean }, reading: any) => {
-                    const dayIndex = days.findIndex(d => d.day === reading.day)
-                    if (dayIndex !== -1) {
-                        acc[dayIndex] = true
+                    console.log(reading)
+                    if (reading.userId == userId) {
+                        const dayIndex = days.findIndex(d => d.day === reading.day)
+                        if (dayIndex !== -1) {
+                            acc[dayIndex] = true
+                        }
                     }
                     return acc
                 }, {})
 
-                // @ts-ignore
-                setCheckedDays(readDaysMap)
+                setCheckedDays(readDaysMap || {})
             } catch (error) {
                 console.error("Erro ao buscar dias lidos:", error)
             }
@@ -109,9 +111,19 @@ export default function LeituraPage() {
         }
     }
 
+    const handleLogout = async () =>{
+        await deleteCookie("user_id")
+        await deleteCookie('user_name')
+
+        router.push('/')
+    }
+
     return (
         <>
             <div className="p-8">
+                <div className="flex justify-end">
+                    <Button onClick={handleLogout} variant="link" className="text-[#5472b7] font-bold font-outfit">Sair</Button>
+                </div>
                 <div className="flex flex-col gap-4 items-center">
                     <img src="/logo.png" alt="Logo" />
                     <img src="/logodkm.png" className="w-20" alt="" />

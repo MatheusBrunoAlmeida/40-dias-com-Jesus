@@ -11,6 +11,7 @@ export async function getUserReadDays(userId: string) {
       },
       select: {
         day: true,
+        userId: true
       },
       orderBy: {
         day: 'asc',
