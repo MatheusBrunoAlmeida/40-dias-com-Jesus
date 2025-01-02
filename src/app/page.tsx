@@ -61,6 +61,8 @@ export default function Home() {
 
       setCookie('user_id', data.id)
       setCookie('user_name', data.name)
+      localStorage.setItem('user_id', data.id)
+      localStorage.setItem('user_name', data.name)
       router.push('/leitura')
     } catch (error) {
       toast.error("Email ou senha incorretos")

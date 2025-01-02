@@ -28,14 +28,21 @@ export default function LeituraPage() {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [selectedDay, setSelectedDay] = useState<number | null>(null)
     const [showSuccess, setShowSuccess] = useState(false)
-    const [userId, setUserId] = useState<any>()
-    const username = getCookie('user_name')
+    const [userIdData, setUserIdData] = useState<any>()
+    const [userName, setUserName] = useState<any>()
     const { width, height } = useWindowSize()
     const router = useRouter()
 
     useEffect(() => {
         const fetchReadDays = async () => {
             const userId = await getCookie('user_id')
+            setUserIdData(userId)
+            const userName = await getCookie('user_name')
+            setUserName(userName)
+            if(!userId){
+                setUserIdData(localStorage.getItem('user_id'))
+                setUserName(localStorage.getItem('user_name'))
+            }
             // setUserId(userId)
             try {
                 // @ts-ignore
@@ -128,7 +135,7 @@ export default function LeituraPage() {
                     <img src="/logo.png" alt="Logo" />
                     <img src="/logodkm.png" className="w-20" alt="" />
                     <div className="flex flex-col gap-0 mt-10 items-center">
-                        <span className="font-outfit">Bem vindo(a) {username}</span>
+                        <span className="font-outfit">Bem vindo(a) {userName}</span>
                         <span className="font-outfit font-semibold">Marque o dia que você leu</span>
                     </div>
                 </div>
