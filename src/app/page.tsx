@@ -24,8 +24,6 @@ export default function Home() {
     const userId = await getCookie('user_id')
 
     if(username && userId){
-      console.log(username, userId)
-
       router.push('/leitura')
     }
   }

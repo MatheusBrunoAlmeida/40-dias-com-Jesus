@@ -19,9 +19,11 @@ import { getCookie, deleteCookie } from "cookies-next"
 import { motion, AnimatePresence } from "framer-motion"
 import ReactConfetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
-import { getUserReadDays } from '@/app/actions/userActions'
+import { getUserReadDays, unCheckDay } from '@/app/actions/userActions'
 import Head from "next/head"
 import { useRouter } from "next/navigation"
+import { Progress } from "@/components/ui/progress"
+import { toast } from "react-toastify"
 
 export default function LeituraPage() {
     const [checkedDays, setCheckedDays] = useState<{ [key: number]: boolean }>({})
@@ -30,8 +32,10 @@ export default function LeituraPage() {
     const [showSuccess, setShowSuccess] = useState(false)
     const [userIdData, setUserIdData] = useState<any>()
     const [userName, setUserName] = useState<any>()
+    const [dayData, setDayData] = useState<any>()
     const { width, height } = useWindowSize()
     const router = useRouter()
+    const [progress, setProgress] = useState(0)
 
     useEffect(() => {
         const fetchReadDays = async () => {
@@ -39,7 +43,7 @@ export default function LeituraPage() {
             setUserIdData(userId)
             const userName = await getCookie('user_name')
             setUserName(userName)
-            if(!userId){
+            if (!userId) {
                 setUserIdData(localStorage.getItem('user_id'))
                 setUserName(localStorage.getItem('user_name'))
             }
@@ -47,6 +51,10 @@ export default function LeituraPage() {
             try {
                 // @ts-ignore
                 const response = await getUserReadDays(userId);
+
+                setDayData(response)
+
+                console.log(response)
 
                 const readDaysMap = response?.data?.reduce((acc: { [key: number]: boolean }, reading: any) => {
                     console.log(reading)
@@ -60,6 +68,10 @@ export default function LeituraPage() {
                 }, {})
 
                 setCheckedDays(readDaysMap || {})
+
+                // Calculate progress
+                const checkedCount = Object.values(readDaysMap || {}).filter(Boolean).length
+                setProgress((checkedCount / days.length) * 100)
             } catch (error) {
                 console.error("Erro ao buscar dias lidos:", error)
             }
@@ -74,10 +86,7 @@ export default function LeituraPage() {
             setSelectedDay(index)
             setDialogOpen(true)
         } else {
-            setCheckedDays(prev => ({
-                ...prev,
-                [index]: false
-            }))
+            handleUnCheckDay(index)
         }
     }
 
@@ -102,10 +111,16 @@ export default function LeituraPage() {
                 })
 
                 if (response.ok) {
-                    setCheckedDays(prev => ({
-                        ...prev,
-                        [selectedDay]: true
-                    }))
+                    setCheckedDays(prev => {
+                        const newChecked = {
+                            ...prev,
+                            [selectedDay]: true
+                        }
+                        // Update progress
+                        const checkedCount = Object.values(newChecked).filter(Boolean).length
+                        setProgress((checkedCount / days.length) * 100)
+                        return newChecked
+                    })
                     setDialogOpen(false)
                     setShowSuccess(true)
                     setTimeout(() => setShowSuccess(false), 3000)
@@ -118,11 +133,29 @@ export default function LeituraPage() {
         }
     }
 
-    const handleLogout = async () =>{
+    const handleLogout = async () => {
         await deleteCookie("user_id")
         await deleteCookie('user_name')
 
         router.push('/')
+    }
+
+    const handleUnCheckDay = async (day: any) => {
+        const dayChecked = days[day].day
+
+        const dayObject = dayData.data.filter((item: any) => item.day == dayChecked)
+
+        try {
+            const response = await unCheckDay(dayObject[0])
+
+            setCheckedDays(prev => ({
+                ...prev,
+                [day]: false
+            }))
+        } catch (error) {
+            toast.error('Tivemos um problema ao desmarcar o dia lido, tente novamente depois!')
+        }
+
     }
 
     return (
@@ -137,6 +170,28 @@ export default function LeituraPage() {
                     <div className="flex flex-col gap-0 mt-10 items-center">
                         <span className="font-outfit">Bem vindo(a) {userName}</span>
                         <span className="font-outfit font-semibold">Marque o dia que você leu</span>
+
+                        <div className="w-full max-w-md mt-4">
+                            <div className="flex justify-between mb-1">
+                                <span className="font-outfit">Dias</span>
+                                <span className="font-outfit">{progress / 100 * 40} / 40</span>
+                            </div>
+                            <div className="relative">
+                                <Progress
+                                    value={progress}
+                                    className="h-4 bg-gray-200 [&>div]:bg-green-500"
+                                />
+                                {progress > 0 && (
+                                    <div className="absolute top-[-8px] left-0" style={{ width: `${progress}%` }}>
+                                        <img
+                                            src="/fire3.gif"
+                                            className="h-7 absolute right-0 transform translate-x-1/2"
+                                            style={{ maxWidth: '20px' }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
