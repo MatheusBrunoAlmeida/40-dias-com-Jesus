@@ -12,7 +12,13 @@ export async function getUserReadDays(userId: string) {
       select: {
         day: true,
         userId: true,
-        id: true
+        id: true,
+        user: {
+          select: {
+            localidade: true,
+            id: true
+          }
+        }
       },
       orderBy: {
         day: 'asc',
