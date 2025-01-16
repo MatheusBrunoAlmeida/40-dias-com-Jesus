@@ -33,6 +33,11 @@ export default function QuemLeuPage() {
         fetchLeituras();
     }, []);
 
+    // Função auxiliar para remover acentos
+    const removeAcentos = (texto: string) => {
+        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    };
+
     const filterLieutras = (localidadeName: string) => {
         if (!localidadeName) {
             setFiltredLeitura(leituras);
@@ -42,11 +47,27 @@ export default function QuemLeuPage() {
         const leituraFiltred = leituras.map(dia => ({
             ...dia,
             readers: dia.readers.filter((reader: any) =>
-                reader.local.toLowerCase().includes(localidadeName.toLowerCase())
+                removeAcentos(reader.local.toLowerCase())
+                    .includes(removeAcentos(localidadeName.toLowerCase()))
             )
         }));
 
-        console.log(leituraFiltred)
+        setFiltredLeitura(leituraFiltred);
+    }
+
+    const filtredByName = (name: string) => {
+        if (!name) {
+            setFiltredLeitura(leituras);
+            return;
+        }
+
+        const leituraFiltred = leituras.map(dia => ({
+            ...dia,
+            readers: dia.readers.filter((reader: any) =>
+                removeAcentos(reader.name.toLowerCase())
+                    .includes(removeAcentos(name.toLowerCase()))
+            )
+        }));
 
         setFiltredLeitura(leituraFiltred);
     }
@@ -77,11 +98,25 @@ export default function QuemLeuPage() {
                 ))}
             </div>
 
-            <Input
-                placeholder='Pesquisar por localidade'
-                className='mb-5'
-                onChange={(e) => filterLieutras(e.target.value)}
-            />
+            <div className='flex items-center gap-8 justify-start'>
+                <div className='space-y-2'>
+                    <span className='font-semibold'>Pesquisar por localidade:</span>
+                    <Input
+                        placeholder='Pesquisar por localidade'
+                        className='mb-5'
+                        onChange={(e) => filterLieutras(e.target.value)}
+                    />
+                </div>
+
+                <div className='space-y-2'>
+                    <span className='font-semibold' >Pesquisar por nome</span>
+                    <Input
+                        placeholder='Pesquisar por nome'
+                        className='mb-5'
+                        onChange={(e) => filtredByName(e.target.value)}
+                    />
+                </div>
+            </div>
 
             {filtredLeitura?.map((leitura) => (
                 <div key={leitura.day} id={`day-${leitura.day}`} className="mb-6 mt-8">
@@ -90,7 +125,7 @@ export default function QuemLeuPage() {
                     </h2>
                     <div>
                         <span>
-                        {/* @ts-ignore */}
+                            {/* @ts-ignore */}
                             {leitura.readers.slice(0, 30).map((leitor, index) => (
                                 index === Math.min(29, leitura.readers.length - 1)
                                     ? `${leitor.name}${leitura.readers.length > 30 ? '...' : ''}`
