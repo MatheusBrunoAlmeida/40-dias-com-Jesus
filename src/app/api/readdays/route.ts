@@ -50,9 +50,11 @@ export async function GET() {
       if (!acc[curr.day]) {
         acc[curr.day] = {
           day: curr.day,
+          // @ts-ignore
           readers: [{name: curr.user.name, local: curr.user.localidade}]
         }
       }
+      // @ts-ignore
       acc[curr.day].readers.push({name: curr.user.name, local: curr.user.localidade})
       return acc
     }, {} as Record<number, { day: number, readers: string[] }>)

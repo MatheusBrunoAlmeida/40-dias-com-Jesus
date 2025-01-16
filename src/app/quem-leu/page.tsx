@@ -90,6 +90,7 @@ export default function QuemLeuPage() {
                     </h2>
                     <div>
                         <span>
+                        {/* @ts-ignore */}
                             {leitura.readers.slice(0, 30).map((leitor, index) => (
                                 index === Math.min(29, leitura.readers.length - 1)
                                     ? `${leitor.name}${leitura.readers.length > 30 ? '...' : ''}`
