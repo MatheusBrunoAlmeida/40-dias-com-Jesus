@@ -20,7 +20,7 @@ export const days = [
     { day: 19, read: 'Atos 5-9' },
     { day: 20, read: 'Atos 10-15' },
     { day: 21, read: 'Atos 16-21' },
-    { day: 22, read: 'Atos 22-27' },
+    { day: 22, read: 'Atos 22-28' },
     { day: 23, read: 'Romanos 1-4' },
     { day: 24, read: 'Romanos 5-10' },
     { day: 25, read: 'Romanos 11-16' },
